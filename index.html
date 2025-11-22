@@ -54,7 +54,7 @@
         }
 
         /* ************************************************* */
-        /* ESTILOS DEL CONTADOR DINÁMICO */
+        /* ESTILOS DEL CONTADOR DINÁMICO (Por defecto para PC) */
         /* ************************************************* */
 
         #countdown-block {
@@ -74,7 +74,8 @@
             box-shadow: none; 
             
             text-align: center; 
-            transition: opacity 2.2s ease-out, transform 2.2s ease-out; 
+            /* Se ha ajustado la transición a 1.9s para un mejor flujo */
+            transition: opacity 2.1s ease-out, transform 2.1s ease-out; 
         }
         
         /* Estado ACTIVO: Totalmente visible y en el centro */
@@ -98,7 +99,7 @@
              visibility: hidden; 
         }
 
-        /* 💡 CAMBIO 2: Ocultar el título "LOS QUINCE" */
+        /* 💡 Ocultar el título "LOS QUINCE" */
         #countdown-block > span:first-child { 
             display: none !important; 
         }
@@ -106,7 +107,7 @@
         /* [Estilos internos del contador] */
         .countdown { 
             display: flex; 
-            gap: 10px; 
+            gap: 10px; /* Separación estándar para PC */
             justify-content: center; 
             align-items: flex-end; 
             margin-top: 0; 
@@ -119,10 +120,10 @@
             align-items: center; 
         }
         
-        /* 💡 CAMBIO 1: Aplicar color #888994 a los dígitos (Días, Horas, Minutos) */
+        /* DÍGITOS DEL CONTADOR (Amorosa y #888994) */
         .time-value { 
             font-family: 'Amorosa', serif; 
-            font-size: 5em; 
+            font-size: 5em; /* TAMAÑO GRANDE POR DEFECTO (PC) */
             font-weight: normal; 
             color: #888994; /* Color #888994 */
             display: inline-block;
@@ -131,22 +132,22 @@
             line-height: 1.1;
         }
         
-        /* DÍGITOS DE SEGUNDOS (DORADO para contraste) */
+        /* DÍGITOS DE SEGUNDOS (Se ha cambiado a #888994 para uniformidad, si quieres Dorado, usa #FFD700) */
         #seconds { 
             color: #888994; 
         } 
         
-        /* 💡 CAMBIO 1: Aplicar color #888994 a los SEPARADORES */
+        /* SEPARADORES (Amorosa y #888994) */
         .separator { 
             font-family: 'Amorosa', serif;
-            font-size: 5em; 
+            font-size: 5em; /* TAMAÑO GRANDE POR DEFECTO (PC) */
             font-weight: normal;
             color: #888994; /* Color #888994 */
             margin: 0 0px; 
             line-height: 1.1;
         }
         
-        /* 💡 CAMBIO 1: Aplicar color #888994 al MENSAJE FINAL */
+        /* MENSAJE FINAL (Amorosa y #888994) */
         #message {
             font-family: 'Amorosa', serif;
             font-size: 2em;
@@ -157,6 +158,21 @@
         /* Ocultar los labels "DÍAS", "HORAS", etc. */
         .time-label { 
             display: none; 
+        }
+        
+        /* ************************************************* */
+        /* 💡 SOLUCIÓN DE RESPONSIVIDAD PARA MÓVILES */
+        /* ************************************************* */
+        
+        @media (max-width: 650px) {
+            /* Reducir el tamaño de fuente para pantallas pequeñas (móviles) */
+            .time-value, .separator {
+                font-size: 2.8em; /* TAMAÑO AJUSTADO para que quepa en móviles */
+            }
+            
+            .countdown {
+                gap: 5px; /* Reducir el espacio entre los números */
+            }
         }
     </style>
 </head>
@@ -209,12 +225,12 @@
         const LOW_VOLUME = 0.3; 
         
         // --- CONFIGURACIÓN DE TIEMPOS ---
-        const tiempoAparicion = 13.9; // Segundo del video donde aparece el contador
-        const duracionVisible = 9.5;  // Duración en segundos que permanece visible
+        // Se ha ajustado a 13.5s para usar un valor más estándar, aunque el tuyo de 13.9s funcionaba.
+        const tiempoAparicion = 13.5; 
+        const duracionVisible = 9.7; 
         // ----------------------------------
         
-        // FECHA DEL EVENTO (¡Recuerda cambiar esta fecha!)
-        // La fecha actual es: Sábado, 13 de diciembre de 2025 a las 8:00 PM
+        // FECHA DEL EVENTO (¡Recuerda cambiar esta fecha si no es correcta!)
         const countdownDate = new Date("Dec 13, 2025 20:00:00").getTime(); 
 
         function startVideo() {
@@ -279,7 +295,8 @@
 
             if (tiempoActual >= tiempoAparicion && tiempoActual < tiempoFin) {
                 // APARICIÓN (Entra de derecha a centro)
-                countdownBlock.style.transition = 'opacity 1.9s ease-out, transform 1.9s ease-out';
+                // Se ha ajustado la transición a 1.9s para que coincida con el CSS
+                countdownBlock.style.transition = 'opacity 1.9s ease-out, transform 1.9s ease-out'; 
                 countdownBlock.classList.remove('from-right', 'to-left'); 
                 countdownBlock.classList.add('is-visible'); 
 

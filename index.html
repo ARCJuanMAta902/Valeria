@@ -54,7 +54,7 @@
         }
 
         /* ************************************************* */
-        /* ESTILOS DEL CONTADOR DINÁMICO (Por defecto para PC) */
+        /* ESTILOS DEL CONTADOR DINÁMICO (Con Animación Vertical) */
         /* ************************************************* */
 
         #countdown-block {
@@ -63,8 +63,9 @@
             left: 50%;
             z-index: 50; 
             
-            /* ESTADO BASE (SALIDA A LA IZQUIERDA) */
-            transform: translateX(-50%) translateX(-100%); 
+            /* ESTADO BASE (SALIDA HACIA ARRIBA) */
+            /* Cambiamos X a Y: Sale por arriba (100% de la altura del bloque) */
+            transform: translateX(-50%) translateY(-100vh); 
             opacity: 0; 
             visibility: hidden; 
             
@@ -74,7 +75,6 @@
             box-shadow: none; 
             
             text-align: center; 
-            /* Se ha ajustado la transición a 1.9s para un mejor flujo */
             transition: opacity 2.1s ease-out, transform 2.1s ease-out; 
         }
         
@@ -82,19 +82,22 @@
         #countdown-block.is-visible {
             opacity: 1;
             visibility: visible;
-            transform: translateX(-50%) translateX(0); /* Posición central */
+            /* Se mantiene en el 15% superior de la pantalla */
+            transform: translateX(-50%) translateY(0); 
         }
         
-        /* Clase para forzar la ENTRADA DESDE la DERECHA (Punto de inicio) */
+        /* 💡 CLASE DE ENTRADA: Viene DESDE ARRIBA */
         #countdown-block.from-right {
-             transform: translateX(-50%) translateX(100%);
+             /* La animación de entrada viene desde ARRIBA, fuera de la vista (-100vh) */
+             transform: translateX(-50%) translateY(-100vh);
              opacity: 0; 
              visibility: hidden; 
         }
 
-        /* Clase: Fuerza el estado de SALIDA A la IZQUIERDA */
+        /* 💡 CLASE DE SALIDA: Desaparece HACIA ABAJO */
         #countdown-block.to-left {
-             transform: translateX(-50%) translateX(-100%); 
+             /* La animación de salida va hacia ABAJO (+100vh) */
+             transform: translateX(-50%) translateY(100vh); 
              opacity: 0; 
              visibility: hidden; 
         }
@@ -104,7 +107,7 @@
             display: none !important; 
         }
 
-        /* [Estilos internos del contador] */
+        /* [Estilos internos del contador, sin cambios funcionales] */
         .countdown { 
             display: flex; 
             gap: 10px; /* Separación estándar para PC */
@@ -161,7 +164,7 @@
         }
         
         /* ************************************************* */
-        /* 💡 SOLUCIÓN DE RESPONSIVIDAD PARA MÓVILES */
+        /* 💡 SOLUCIÓN DE RESPONSIVIDAD PARA MÓVILES (sin cambios) */
         /* ************************************************* */
         
         @media (max-width: 650px) {
@@ -224,10 +227,9 @@
         
         const LOW_VOLUME = 0.3; 
         
-        // --- CONFIGURACIÓN DE TIEMPOS ---
-        // Se ha ajustado a 13.5s para usar un valor más estándar, aunque el tuyo de 13.9s funcionaba.
-        const tiempoAparicion = 13.5; 
-        const duracionVisible = 9.7; 
+        // --- CONFIGURACIÓN DE TIEMPOS (sin cambios) ---
+        const tiempoAparicion = 27; 
+        const duracionVisible = 7.2; 
         // ----------------------------------
         
         // FECHA DEL EVENTO (¡Recuerda cambiar esta fecha si no es correcta!)
@@ -252,7 +254,7 @@
             }
         }
         
-        // --- FUNCIÓN DE ACTUALIZACIÓN DEL CONTADOR ---
+        // --- FUNCIÓN DE ACTUALIZACIÓN DEL CONTADOR (sin cambios) ---
         function updateCountdown() {
             const now = new Date().getTime();
             const distance = countdownDate - now;
@@ -281,21 +283,17 @@
             }
         }
 
-        // Ejecutar la actualización una vez para mostrar el tiempo correcto al inicio
         updateCountdown(); 
-        
-        // Establecer el intervalo de actualización
         const countdownInterval = setInterval(updateCountdown, 1000);
 
         
-        // --- CONTROL DE VISIBILIDAD BASADA EN EL TIEMPO DEL VIDEO ---
+        // --- CONTROL DE VISIBILIDAD BASADA EN EL TIEMPO DEL VIDEO (sin cambios en la lógica) ---
         video.addEventListener('timeupdate', function() {
             const tiempoFin = tiempoAparicion + duracionVisible;
             const tiempoActual = video.currentTime;
 
             if (tiempoActual >= tiempoAparicion && tiempoActual < tiempoFin) {
-                // APARICIÓN (Entra de derecha a centro)
-                // Se ha ajustado la transición a 1.9s para que coincida con el CSS
+                // APARICIÓN (Entra de ARRIBA)
                 countdownBlock.style.transition = 'opacity 1.9s ease-out, transform 1.9s ease-out'; 
                 countdownBlock.classList.remove('from-right', 'to-left'); 
                 countdownBlock.classList.add('is-visible'); 
@@ -303,12 +301,12 @@
             } else {
                 // DESAPARICIÓN O PRE-INICIO
                 if (tiempoActual >= tiempoFin) {
-                    // DESAPARICIÓN (Sale del centro hacia la IZQUIERDA)
+                    // DESAPARICIÓN (Sale HACIA ABAJO)
                     countdownBlock.classList.remove('is-visible'); 
                     countdownBlock.classList.add('to-left'); 
                     
                 } else if (tiempoActual < tiempoAparicion) {
-                    // PRE-INICIO (Asegura el estado inicial antes de aparecer, sin transición)
+                    // PRE-INICIO (Asegura el estado inicial fuera de vista, ARRIBA)
                     if (!countdownBlock.classList.contains('from-right')) {
                         countdownBlock.style.transition = 'none'; 
                         countdownBlock.classList.remove('is-visible', 'to-left');

@@ -6,10 +6,10 @@
     <title>Video Ajustado XV Años</title>
     
     <style>
-        /* 💡 CONFIGURACIÓN DE FUENTE AMOROSA (Asegúrate de que los archivos estén en la misma carpeta) */
+        /* 💡 CONFIGURACIÓN DE FUENTE AMOROSA */
         @font-face {
             font-family: 'Amorosa';
-            /* ¡VERIFICA ESTAS RUTAS! Deben apuntar a donde guardaste tu archivo de fuente Amorosa. */
+            /* ¡VERIFICA ESTAS RUTAS! Deben apuntar a donde guardaste tu fuente. */
             src: url('Amorosa-Regular.woff2') format('woff2'),
                  url('Amorosa-Regular.woff') format('woff'),
                  url('Amorosa-Regular.ttf') format('truetype');
@@ -17,7 +17,7 @@
             font-style: normal;
         }
 
-        /* CONFIGURACIÓN BASE DEL BODY (sin cambios) */
+        /* CONFIGURACIÓN BASE DEL BODY */
         body {
             margin: 0;
             padding: 0;
@@ -31,7 +31,7 @@
             color: white;
         }
 
-        /* VIDEO DE FONDO (sin cambios) */
+        /* VIDEO DE FONDO */
         #background-video {
             width: 100vw;
             height: 100vh;
@@ -39,7 +39,7 @@
             z-index: -100;
         }
 
-        /* Estilos del BOTÓN INVISIBLE (sin cambios) */
+        /* Estilos del BOTÓN INVISIBLE - Control de inicio, pausa e ícono */
         #start-button {
             position: absolute;
             z-index: 100; 
@@ -51,27 +51,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 50px; 
+            color: rgba(255, 255, 255, 0.7); 
+            transition: opacity 0.3s;
+        }
+
+        /* 💥 CORRECCIÓN: Quitamos pointer-events: none; para que SIEMPRE capture el clic */
+        #start-button.hidden {
+             opacity: 0;
+             /* 💡 DEBEMOS DEJAR EL PUNTERO ACTIVO para que pueda PAUSAR/REANUDAR */
         }
 
         /* ************************************************* */
-        /* ESTILOS DEL CONTADOR DINÁMICO (Con Animación Vertical) */
+        /* ESTILOS DEL CONTADOR DINÁMICO (Animación Vertical) */
         /* ************************************************* */
 
         #countdown-block {
             position: absolute;
-            top: 15%; 
+            top: 20%; /* Posición vertical ajustada */
             left: 50%;
             z-index: 50; 
             
             /* ESTADO BASE (SALIDA HACIA ARRIBA) */
-            /* Cambiamos X a Y: Sale por arriba (100% de la altura del bloque) */
             transform: translateX(-50%) translateY(-100vh); 
             opacity: 0; 
             visibility: hidden; 
             
             padding: 0; 
             background-color: transparent; 
-            border-radius: 0; 
             box-shadow: none; 
             
             text-align: center; 
@@ -82,70 +89,63 @@
         #countdown-block.is-visible {
             opacity: 1;
             visibility: visible;
-            /* Se mantiene en el 15% superior de la pantalla */
             transform: translateX(-50%) translateY(0); 
         }
         
-        /* 💡 CLASE DE ENTRADA: Viene DESDE ARRIBA */
+        /* CLASE DE ENTRADA: Viene DESDE ARRIBA */
         #countdown-block.from-right {
-             /* La animación de entrada viene desde ARRIBA, fuera de la vista (-100vh) */
              transform: translateX(-50%) translateY(-100vh);
              opacity: 0; 
              visibility: hidden; 
         }
 
-        /* 💡 CLASE DE SALIDA: Desaparece HACIA ABAJO */
+        /* CLASE DE SALIDA: Desaparece HACIA ABAJO */
         #countdown-block.to-left {
-             /* La animación de salida va hacia ABAJO (+100vh) */
              transform: translateX(-50%) translateY(100vh); 
              opacity: 0; 
              visibility: hidden; 
         }
 
-        /* 💡 Ocultar el título "LOS QUINCE" */
+        /* Ocultar el título "LOS QUINCE" */
         #countdown-block > span:first-child { 
             display: none !important; 
         }
 
-        /* [Estilos internos del contador, sin cambios funcionales] */
+        /* Contenedor principal de los números (Horizontal) */
         .countdown { 
             display: flex; 
-            gap: 10px; /* Separación estándar para PC */
+            gap: 5px; 
             justify-content: center; 
-            align-items: flex-end; 
+            align-items: center; 
             margin-top: 0; 
         }
+        
+        /* Contenedor de cada cifra (ahora en línea) */
         .time-segment { 
             padding: 0; 
-            line-height: 1; 
+            line-height: 1.1; 
             display: flex; 
-            flex-direction: column; 
             align-items: center; 
         }
         
         /* DÍGITOS DEL CONTADOR (Amorosa y #888994) */
         .time-value { 
             font-family: 'Amorosa', serif; 
-            font-size: 5em; /* TAMAÑO GRANDE POR DEFECTO (PC) */
+            font-size: 5em; 
             font-weight: normal; 
-            color: #888994; /* Color #888994 */
+            color: #888994; 
             display: inline-block;
             min-width: unset; 
             text-align: center; 
             line-height: 1.1;
         }
         
-        /* DÍGITOS DE SEGUNDOS (Se ha cambiado a #888994 para uniformidad, si quieres Dorado, usa #FFD700) */
-        #seconds { 
-            color: #888994; 
-        } 
-        
         /* SEPARADORES (Amorosa y #888994) */
         .separator { 
             font-family: 'Amorosa', serif;
-            font-size: 5em; /* TAMAÑO GRANDE POR DEFECTO (PC) */
+            font-size: 5em; 
             font-weight: normal;
-            color: #888994; /* Color #888994 */
+            color: #888994; 
             margin: 0 0px; 
             line-height: 1.1;
         }
@@ -154,7 +154,7 @@
         #message {
             font-family: 'Amorosa', serif;
             font-size: 2em;
-            color: #888994; /* Color #888994 */
+            color: #888994; 
             margin-top: 20px;
         }
 
@@ -163,27 +163,22 @@
             display: none; 
         }
         
-        /* ************************************************* */
-        /* 💡 SOLUCIÓN DE RESPONSIVIDAD PARA MÓVILES (sin cambios) */
-        /* ************************************************* */
-        
+        /* RESPONSIVIDAD MÓVIL */
         @media (max-width: 650px) {
-            /* Reducir el tamaño de fuente para pantallas pequeñas (móviles) */
             .time-value, .separator {
-                font-size: 2.8em; /* TAMAÑO AJUSTADO para que quepa en móviles */
+                font-size: 2.8em; 
             }
-            
-            .countdown {
-                gap: 5px; /* Reducir el espacio entre los números */
+             .countdown {
+                gap: 5px; 
             }
         }
     </style>
 </head>
 <body>
 
-    <button id="start-button" onclick="startVideo()"></button>
+    <button id="start-button" onclick="handleVideoControl()">▶</button> 
     
-    <video loop playsinline id="background-video"> 
+    <video playsinline id="background-video"> 
         <source src="Invitación 15 Valeria.mp4" type="video/mp4">
         Tu navegador no soporta el formato de video.
     </video>
@@ -227,15 +222,44 @@
         
         const LOW_VOLUME = 0.3; 
         
-        // --- CONFIGURACIÓN DE TIEMPOS (sin cambios) ---
-        const tiempoAparicion = 27; 
-        const duracionVisible = 7.2; 
+        // --- CONFIGURACIÓN DE TIEMPOS ---
+        const tiempoAparicion = 27.3; 
+        const duracionVisible = 7.7;  
         // ----------------------------------
         
-        // FECHA DEL EVENTO (¡Recuerda cambiar esta fecha si no es correcta!)
+        // FECHA DEL EVENTO
         const countdownDate = new Date("Dec 13, 2025 20:00:00").getTime(); 
 
-        function startVideo() {
+        // 💥 FUNCIÓN UNIFICADA: Maneja Inicio, Pausa, Reanudación y Reinicio
+        function handleVideoControl() {
+            // 1. Si el video terminó, es REINICIO
+            if (video.ended) {
+                video.currentTime = 0;
+                // Reiniciar el estado del contador visualmente
+                countdownBlock.style.transition = 'none'; 
+                countdownBlock.classList.remove('is-visible', 'to-left');
+                countdownBlock.classList.add('from-right');
+                document.getElementById("message").style.display = 'none';
+                updateCountdown(); 
+                
+                // Intentar reproducir (pasa al paso 3)
+                attemptPlay();
+                
+            // 2. Si el video está PAUSADO, es REANUDACIÓN
+            } else if (video.paused) {
+                attemptPlay();
+                
+            // 3. Si el video está en REPRODUCCIÓN, es PAUSA
+            } else {
+                video.pause();
+                // Mostrar el ícono de pausa
+                startButton.classList.remove('hidden'); 
+                startButton.innerHTML = '❚❚';
+            }
+        }
+        
+        // Función auxiliar para manejar la reproducción y el autojuego
+        function attemptPlay() {
             video.volume = LOW_VOLUME; 
             video.playbackRate = 1.0; 
             
@@ -243,18 +267,31 @@
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    startButton.style.display = 'none'; 
+                    // Ocultar el ícono cuando se reproduce con éxito
+                    startButton.classList.add('hidden'); 
+                    startButton.innerHTML = ''; 
                 })
                 .catch(error => {
+                    // Fallback si el navegador bloquea el auto-play con audio
                     video.muted = true;
                     video.play();
-                    startButton.style.display = 'none';
+                    startButton.classList.add('hidden');
+                    startButton.innerHTML = '';
                     console.warn("Audio bloqueado. Reproduciendo video sin sonido.");
                 });
             }
         }
+
+        // --- ASIGNAR EVENTOS DE CONTROL ---
         
-        // --- FUNCIÓN DE ACTUALIZACIÓN DEL CONTADOR (sin cambios) ---
+        // 💥 IMPORTANTE: Escuchar el evento 'ended' solo para cambiar el ícono a Reiniciar
+        video.addEventListener('ended', function() {
+            startButton.classList.remove('hidden'); 
+            startButton.innerHTML = '⟳'; // Ícono de Reiniciar
+        });
+
+        // --- LÓGICA DEL CONTADOR (Sin cambios funcionales) ---
+
         function updateCountdown() {
             const now = new Date().getTime();
             const distance = countdownDate - now;
@@ -265,16 +302,14 @@
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // Siempre actualizamos los valores de los elementos
                 document.getElementById("days").innerHTML = days;
                 document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
                 document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
                 document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
                 
             } else {
-                clearInterval(countdownInterval); // Detener el intervalo
+                clearInterval(countdownInterval); 
                 
-                // Lógica de fin de conteo
                 countdownBlock.classList.add('is-visible'); 
                 document.querySelector('#countdown-block .countdown').innerHTML = ''; 
                 const messageElement = document.getElementById("message");
@@ -287,7 +322,7 @@
         const countdownInterval = setInterval(updateCountdown, 1000);
 
         
-        // --- CONTROL DE VISIBILIDAD BASADA EN EL TIEMPO DEL VIDEO (sin cambios en la lógica) ---
+        // --- CONTROL DE ANIMACIÓN DEL CONTADOR EN EL TIEMPO DEL VIDEO ---
         video.addEventListener('timeupdate', function() {
             const tiempoFin = tiempoAparicion + duracionVisible;
             const tiempoActual = video.currentTime;

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Ajustado XV Años</title>
+    
+    <style>
+        /* 💡 CONFIGURACIÓN DE FUENTE AMOROSA (Asegúrate de que los archivos estén en la misma carpeta) */
+        @font-face {
+            font-family: 'Amorosa';
+            /* ¡VERIFICA ESTAS RUTAS! Deben apuntar a donde guardaste tu archivo de fuente Amorosa. */
+            src: url('Amorosa-Regular.woff2') format('woff2'),
+                 url('Amorosa-Regular.woff') format('woff'),
+                 url('Amorosa-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* CONFIGURACIÓN BASE DEL BODY (sin cambios) */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex; 
+            justify-content: center;
+            align-items: center; 
+            min-height: 100vh;
+            background-color: black; 
+            position: relative;
+            font-family: Arial, sans-serif; 
+            color: white;
+        }
+
+        /* VIDEO DE FONDO (sin cambios) */
+        #background-video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain; 
+            z-index: -100;
+        }
+
+        /* Estilos del BOTÓN INVISIBLE (sin cambios) */
+        #start-button {
+            position: absolute;
+            z-index: 100; 
+            width: 100vw;
+            height: 100vh;
+            background-color: transparent; 
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ************************************************* */
+        /* ESTILOS DEL CONTADOR DINÁMICO */
+        /* ************************************************* */
+
+        #countdown-block {
+            position: absolute;
+            top: 15%; 
+            left: 50%;
+            z-index: 50; 
+            
+            /* ESTADO BASE (SALIDA A LA IZQUIERDA) */
+            transform: translateX(-50%) translateX(-100%); 
+            opacity: 0; 
+            visibility: hidden; 
+            
+            padding: 0; 
+            background-color: transparent; 
+            border-radius: 0; 
+            box-shadow: none; 
+            
+            text-align: center; 
+            transition: opacity 2.2s ease-out, transform 2.2s ease-out; 
+        }
+        
+        /* Estado ACTIVO: Totalmente visible y en el centro */
+        #countdown-block.is-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateX(0); /* Posición central */
+        }
+        
+        /* Clase para forzar la ENTRADA DESDE la DERECHA (Punto de inicio) */
+        #countdown-block.from-right {
+             transform: translateX(-50%) translateX(100%);
+             opacity: 0; 
+             visibility: hidden; 
+        }
+
+        /* Clase: Fuerza el estado de SALIDA A la IZQUIERDA */
+        #countdown-block.to-left {
+             transform: translateX(-50%) translateX(-100%); 
+             opacity: 0; 
+             visibility: hidden; 
+        }
+
+        /* 💡 CAMBIO 2: Ocultar el título "LOS QUINCE" */
+        #countdown-block > span:first-child { 
+            display: none !important; 
+        }
+
+        /* [Estilos internos del contador] */
+        .countdown { 
+            display: flex; 
+            gap: 10px; 
+            justify-content: center; 
+            align-items: flex-end; 
+            margin-top: 0; 
+        }
+        .time-segment { 
+            padding: 0; 
+            line-height: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        
+        /* 💡 CAMBIO 1: Aplicar color #888994 a los dígitos (Días, Horas, Minutos) */
+        .time-value { 
+            font-family: 'Amorosa', serif; 
+            font-size: 5em; 
+            font-weight: normal; 
+            color: #888994; /* Color #888994 */
+            display: inline-block;
+            min-width: unset; 
+            text-align: center; 
+            line-height: 1.1;
+        }
+        
+        /* DÍGITOS DE SEGUNDOS (DORADO para contraste) */
+        #seconds { 
+            color: #888994; 
+        } 
+        
+        /* 💡 CAMBIO 1: Aplicar color #888994 a los SEPARADORES */
+        .separator { 
+            font-family: 'Amorosa', serif;
+            font-size: 5em; 
+            font-weight: normal;
+            color: #888994; /* Color #888994 */
+            margin: 0 0px; 
+            line-height: 1.1;
+        }
+        
+        /* 💡 CAMBIO 1: Aplicar color #888994 al MENSAJE FINAL */
+        #message {
+            font-family: 'Amorosa', serif;
+            font-size: 2em;
+            color: #888994; /* Color #888994 */
+            margin-top: 20px;
+        }
+
+        /* Ocultar los labels "DÍAS", "HORAS", etc. */
+        .time-label { 
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <button id="start-button" onclick="startVideo()"></button>
+    
+    <video loop playsinline id="background-video"> 
+        <source src="Invitación 15 Valeria.mp4" type="video/mp4">
+        Tu navegador no soporta el formato de video.
+    </video>
+
+    <div id="countdown-block" class="from-right"> 
+        <span>LOS QUINCE</span> 
+        
+        <div class="countdown">
+            
+            <div class="time-segment">
+                <span class="time-value" id="days">0</span>
+                <span class="time-label">DÍAS</span>
+            </div>
+            <span class="separator">:</span>
+
+            <div class="time-segment">
+                <span class="time-value" id="hours">0</span>
+                <span class="time-label">HORAS</span>
+            </div>
+            <span class="separator">:</span>
+
+            <div class="time-segment">
+                <span class="time-value" id="minutes">0</span>
+                <span class="time-label">MINUTOS</span>
+            </div>
+            <span class="separator">:</span>
+
+            <div class="time-segment">
+                <span class="time-value" id="seconds">0</span>
+                <span class="time-label">SEGUNDOS</span>
+            </div>
+            
+        </div>
+        <p id="message" style="display: none;"></p>
+    </div>
+
+    <script>
+        const video = document.getElementById('background-video');
+        const startButton = document.getElementById('start-button');
+        const countdownBlock = document.getElementById('countdown-block');
+        
+        const LOW_VOLUME = 0.3; 
+        
+        // --- CONFIGURACIÓN DE TIEMPOS ---
+        const tiempoAparicion = 13.9; // Segundo del video donde aparece el contador
+        const duracionVisible = 9.5;  // Duración en segundos que permanece visible
+        // ----------------------------------
+        
+        // FECHA DEL EVENTO (¡Recuerda cambiar esta fecha!)
+        // La fecha actual es: Sábado, 13 de diciembre de 2025 a las 8:00 PM
+        const countdownDate = new Date("Dec 13, 2025 20:00:00").getTime(); 
+
+        function startVideo() {
+            video.volume = LOW_VOLUME; 
+            video.playbackRate = 1.0; 
+            
+            const playPromise = video.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    startButton.style.display = 'none'; 
+                })
+                .catch(error => {
+                    video.muted = true;
+                    video.play();
+                    startButton.style.display = 'none';
+                    console.warn("Audio bloqueado. Reproduciendo video sin sonido.");
+                });
+            }
+        }
+        
+        // --- FUNCIÓN DE ACTUALIZACIÓN DEL CONTADOR ---
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+            
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Siempre actualizamos los valores de los elementos
+                document.getElementById("days").innerHTML = days;
+                document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
+                document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
+                document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
+                
+            } else {
+                clearInterval(countdownInterval); // Detener el intervalo
+                
+                // Lógica de fin de conteo
+                countdownBlock.classList.add('is-visible'); 
+                document.querySelector('#countdown-block .countdown').innerHTML = ''; 
+                const messageElement = document.getElementById("message");
+                messageElement.style.display = 'block';
+                messageElement.innerHTML = "¡ES HOY! ¡Comencemos la Celebración! 🥳";
+            }
+        }
+
+        // Ejecutar la actualización una vez para mostrar el tiempo correcto al inicio
+        updateCountdown(); 
+        
+        // Establecer el intervalo de actualización
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        
+        // --- CONTROL DE VISIBILIDAD BASADA EN EL TIEMPO DEL VIDEO ---
+        video.addEventListener('timeupdate', function() {
+            const tiempoFin = tiempoAparicion + duracionVisible;
+            const tiempoActual = video.currentTime;
+
+            if (tiempoActual >= tiempoAparicion && tiempoActual < tiempoFin) {
+                // APARICIÓN (Entra de derecha a centro)
+                countdownBlock.style.transition = 'opacity 1.9s ease-out, transform 1.9s ease-out';
+                countdownBlock.classList.remove('from-right', 'to-left'); 
+                countdownBlock.classList.add('is-visible'); 
+
+            } else {
+                // DESAPARICIÓN O PRE-INICIO
+                if (tiempoActual >= tiempoFin) {
+                    // DESAPARICIÓN (Sale del centro hacia la IZQUIERDA)
+                    countdownBlock.classList.remove('is-visible'); 
+                    countdownBlock.classList.add('to-left'); 
+                    
+                } else if (tiempoActual < tiempoAparicion) {
+                    // PRE-INICIO (Asegura el estado inicial antes de aparecer, sin transición)
+                    if (!countdownBlock.classList.contains('from-right')) {
+                        countdownBlock.style.transition = 'none'; 
+                        countdownBlock.classList.remove('is-visible', 'to-left');
+                        countdownBlock.classList.add('from-right');
+                    }
+                }
+            }
+        });
+        
+    </script>
+
+</body>
+</html>

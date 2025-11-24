@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Ajustado XV Años</title>
+    <title>Invitación Personalizada</title>
     
     <style>
-        /* 💡 CONFIGURACIÓN DE FUENTE AMOROSA */
+        /* 💡 CONFIGURACIÓN DE FUENTE AMOROSA (Instrucción Personalizada) */
         @font-face {
             font-family: 'Amorosa';
             /* ¡VERIFICA ESTAS RUTAS! Deben apuntar a donde guardaste tu fuente. */
@@ -56,19 +56,18 @@
             transition: opacity 0.3s;
         }
 
-        /* 💥 CORRECCIÓN: Quitamos pointer-events: none; para que SIEMPRE capture el clic */
+        /* Clase para ocultar el ícono de control */
         #start-button.hidden {
              opacity: 0;
-             /* 💡 DEBEMOS DEJAR EL PUNTERO ACTIVO para que pueda PAUSAR/REANUDAR */
         }
 
         /* ************************************************* */
-        /* ESTILOS DEL CONTADOR DINÁMICO (Animación Vertical) */
+        /* ESTILOS DEL CONTADOR DINÁMICO */
         /* ************************************************* */
 
         #countdown-block {
             position: absolute;
-            top: 20%; /* Posición vertical ajustada */
+            top: 20%; /* Posición vertical ajustada (20% superior) */
             left: 50%;
             z-index: 50; 
             
@@ -92,20 +91,6 @@
             transform: translateX(-50%) translateY(0); 
         }
         
-        /* CLASE DE ENTRADA: Viene DESDE ARRIBA */
-        #countdown-block.from-right {
-             transform: translateX(-50%) translateY(-100vh);
-             opacity: 0; 
-             visibility: hidden; 
-        }
-
-        /* CLASE DE SALIDA: Desaparece HACIA ABAJO */
-        #countdown-block.to-left {
-             transform: translateX(-50%) translateY(100vh); 
-             opacity: 0; 
-             visibility: hidden; 
-        }
-
         /* Ocultar el título "LOS QUINCE" */
         #countdown-block > span:first-child { 
             display: none !important; 
@@ -179,7 +164,6 @@
     <button id="start-button" onclick="handleVideoControl()">▶</button> 
     
     <video playsinline id="background-video"> 
-        <source src="Invitación 15 Valeria.mp4" type="video/mp4">
         Tu navegador no soporta el formato de video.
     </video>
 
@@ -220,45 +204,85 @@
         const startButton = document.getElementById('start-button');
         const countdownBlock = document.getElementById('countdown-block');
         
-        const LOW_VOLUME = 0.3; 
+        // --- CONFIGURACIÓN DEL VIDEO POR TELÉFONO ---
         
-        // --- CONFIGURACIÓN DE TIEMPOS ---
+        // 1. Obtener el parámetro 'tel' (teléfono) de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const telefonoID = urlParams.get('tel'); 
+
+        let videoFileName;
+        
+        // 2. Mapeo: Asignar un número de teléfono a un nombre de archivo de video (extraído de su lista de invitados)
+        const videoMap = {
+            '04249248414': 'Invitación Javier Salas.mp4',
+            '04120892089': 'Invitación Vivenes Pérez.mp4',
+            '04144215508': 'Invitación Arias Vivenes.mp4',
+            '04143949592': 'Invitación Ismery Urbaez.mp4',
+            '04128279166': 'Invitación Blancos Salas.mp4',
+            '04120962195': 'Invitación Sabina.mp4',
+            '04121171726': 'Invitación Navarros Salas.mp4',
+            '04248299641': 'Invitación Felix y Nathalia.mp4',
+            '04122177673': 'Invitación Pedro Salas.mp4',
+            '04166849607': 'Invitación Urbaez Barreto.mp4',
+            '04248439912': 'Invitación Anais Azocar.mp4',
+            '04261964980': 'Invitación Dennys Febres.mp4',
+            '04264065089': 'Invitación Bello Cerneño.mp4',
+            '04126956138': 'Invitación Agustín Urbaez y Sra.mp4',
+            '04249401717': 'Invitación Petra Meneses.mp4',
+            '04167912021': 'Invitación Joel Bello.mp4',
+            '04121163511': 'Invitación Arturo y Alejandra.mp4',
+            '04249045556': 'Invitación Vicdelia y Coromoto.mp4',
+            '04266910440': 'Invitación Sobeida.mp4',
+            '04128706487': 'Invitación Marina.mp4',
+            '04249514004': 'Invitación Cristian.mp4',
+            '04128849070': 'Invitación Nazareth.mp4',
+            '04249273875': 'Invitación Hermano Santil.mp4',
+            '04246778565': 'Invitación Juan Espluga.mp4',
+            '04249503300': 'Invitación Santiago de Freites.mp4',
+            '04124173728': 'Invitación Josué y Rafael.mp4',
+            '04122157205': 'Invitación Milka y Melissa.mp4'
+            // Si el nombre de su video por defecto es "Invitación 15 Valeria.mp4",
+            // no necesita añadirlo aquí.
+        };
+        
+        // 3. Lógica de selección de video
+        if (telefonoID && videoMap[telefonoID]) {
+            videoFileName = videoMap[telefonoID];
+        } else {
+            // Video por defecto si no se especifica el teléfono o no se encuentra
+            videoFileName = 'Invitación 15 Valeria.mp4'; 
+        }
+
+        // 4. Asignar el video seleccionado al elemento <video>
+        video.innerHTML = `<source src="${videoFileName}" type="video/mp4">`;
+        
+        // --- RESTO DEL CÓDIGO (Lógica de control y contador) ---
+        
+        const LOW_VOLUME = 0.3; 
         const tiempoAparicion = 27.3; 
         const duracionVisible = 7.7;  
-        // ----------------------------------
-        
-        // FECHA DEL EVENTO
+        // La fecha del evento es el Sábado 13 de Diciembre (de 2025) a las 8:00 PM (20:00:00)
         const countdownDate = new Date("Dec 13, 2025 20:00:00").getTime(); 
 
-        // 💥 FUNCIÓN UNIFICADA: Maneja Inicio, Pausa, Reanudación y Reinicio
+        // FUNCIÓN UNIFICADA: Maneja Inicio, Pausa, Reanudación y Reinicio
         function handleVideoControl() {
-            // 1. Si el video terminó, es REINICIO
             if (video.ended) {
                 video.currentTime = 0;
-                // Reiniciar el estado del contador visualmente
                 countdownBlock.style.transition = 'none'; 
                 countdownBlock.classList.remove('is-visible', 'to-left');
                 countdownBlock.classList.add('from-right');
                 document.getElementById("message").style.display = 'none';
                 updateCountdown(); 
-                
-                // Intentar reproducir (pasa al paso 3)
                 attemptPlay();
-                
-            // 2. Si el video está PAUSADO, es REANUDACIÓN
             } else if (video.paused) {
                 attemptPlay();
-                
-            // 3. Si el video está en REPRODUCCIÓN, es PAUSA
             } else {
                 video.pause();
-                // Mostrar el ícono de pausa
                 startButton.classList.remove('hidden'); 
                 startButton.innerHTML = '❚❚';
             }
         }
         
-        // Función auxiliar para manejar la reproducción y el autojuego
         function attemptPlay() {
             video.volume = LOW_VOLUME; 
             video.playbackRate = 1.0; 
@@ -267,12 +291,10 @@
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    // Ocultar el ícono cuando se reproduce con éxito
                     startButton.classList.add('hidden'); 
                     startButton.innerHTML = ''; 
                 })
                 .catch(error => {
-                    // Fallback si el navegador bloquea el auto-play con audio
                     video.muted = true;
                     video.play();
                     startButton.classList.add('hidden');
@@ -282,15 +304,10 @@
             }
         }
 
-        // --- ASIGNAR EVENTOS DE CONTROL ---
-        
-        // 💥 IMPORTANTE: Escuchar el evento 'ended' solo para cambiar el ícono a Reiniciar
         video.addEventListener('ended', function() {
             startButton.classList.remove('hidden'); 
-            startButton.innerHTML = '⟳'; // Ícono de Reiniciar
+            startButton.innerHTML = '⟳'; 
         });
-
-        // --- LÓGICA DEL CONTADOR (Sin cambios funcionales) ---
 
         function updateCountdown() {
             const now = new Date().getTime();
@@ -306,10 +323,8 @@
                 document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
                 document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
                 document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
-                
             } else {
                 clearInterval(countdownInterval); 
-                
                 countdownBlock.classList.add('is-visible'); 
                 document.querySelector('#countdown-block .countdown').innerHTML = ''; 
                 const messageElement = document.getElementById("message");
@@ -321,27 +336,19 @@
         updateCountdown(); 
         const countdownInterval = setInterval(updateCountdown, 1000);
 
-        
-        // --- CONTROL DE ANIMACIÓN DEL CONTADOR EN EL TIEMPO DEL VIDEO ---
         video.addEventListener('timeupdate', function() {
             const tiempoFin = tiempoAparicion + duracionVisible;
             const tiempoActual = video.currentTime;
 
             if (tiempoActual >= tiempoAparicion && tiempoActual < tiempoFin) {
-                // APARICIÓN (Entra de ARRIBA)
                 countdownBlock.style.transition = 'opacity 1.9s ease-out, transform 1.9s ease-out'; 
                 countdownBlock.classList.remove('from-right', 'to-left'); 
                 countdownBlock.classList.add('is-visible'); 
-
             } else {
-                // DESAPARICIÓN O PRE-INICIO
                 if (tiempoActual >= tiempoFin) {
-                    // DESAPARICIÓN (Sale HACIA ABAJO)
                     countdownBlock.classList.remove('is-visible'); 
                     countdownBlock.classList.add('to-left'); 
-                    
                 } else if (tiempoActual < tiempoAparicion) {
-                    // PRE-INICIO (Asegura el estado inicial fuera de vista, ARRIBA)
                     if (!countdownBlock.classList.contains('from-right')) {
                         countdownBlock.style.transition = 'none'; 
                         countdownBlock.classList.remove('is-visible', 'to-left');
